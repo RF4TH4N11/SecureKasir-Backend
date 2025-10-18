@@ -25,7 +25,7 @@ npm install
 ```
 PORT=3000
 NODE_ENV=development
-MONGODB_URI=mongodb+srv://capung_db_user:Stefani21%40@capung.xxfvnno.mongodb.net/securekasir
+MONGODB_URI=mongodb+srv:
 JWT_SECRET=your_jwt_secret_key_here_change_in_production
 ```
 
