@@ -78,7 +78,8 @@ export const getProductById = async (req, res, next) => {
  */
 export const createProduct = async (req, res, next) => {
   try {
-    const { name, price, category, stock, image, description, sku } = req.body;
+    const { name, price, category, stock, image, description, sku, unitType } =
+      req.body;
 
     // Validation
     if (!name || !price || !category || stock === undefined || !image) {
@@ -105,6 +106,7 @@ export const createProduct = async (req, res, next) => {
       image,
       description,
       sku,
+      unitType: unitType || "unit",
     });
 
     const savedProduct = await product.save();
@@ -132,8 +134,17 @@ export const createProduct = async (req, res, next) => {
 export const updateProduct = async (req, res, next) => {
   try {
     const { id } = req.params;
-    const { name, price, category, stock, image, description, sku, isActive } =
-      req.body;
+    const {
+      name,
+      price,
+      category,
+      stock,
+      image,
+      description,
+      sku,
+      isActive,
+      unitType,
+    } = req.body;
 
     // Validate MongoDB ObjectId
     if (!id.match(/^[0-9a-fA-F]{24}$/)) {
@@ -152,6 +163,7 @@ export const updateProduct = async (req, res, next) => {
     if (description !== undefined) updateData.description = description;
     if (sku !== undefined) updateData.sku = sku;
     if (isActive !== undefined) updateData.isActive = isActive;
+    if (unitType !== undefined) updateData.unitType = unitType;
 
     // Check if SKU already exists (if being updated)
     if (sku) {
