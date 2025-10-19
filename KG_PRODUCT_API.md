@@ -26,7 +26,7 @@ The system now supports two types of products:
 ```json
 {
   "_id": "6750a1b2c3d4e5f6g7h8i9j0",
-  "name": "Telur Ayam Isi 10",
+  "name": "Telur Ayam Negeri",
   "price": 30000,
   "unitType": "kg",
   "category": "Telur",
@@ -65,7 +65,7 @@ The system now supports two types of products:
 
 ```json
 {
-  "name": "Telur Ayam Isi 10",
+  "name": "Telur Ayam Negeri",
   "price": 30000,
   "unitType": "kg",
   "category": "Telur",
@@ -82,7 +82,7 @@ The system now supports two types of products:
   "message": "Product created successfully",
   "data": {
     "_id": "...",
-    "name": "Telur Ayam Isi 10",
+    "name": "Telur Ayam Negeri",
     "price": 30000,
     "unitType": "kg",
     "category": "Telur",
@@ -128,7 +128,7 @@ Returns all products including their `unitType` field.
   "data": [
     {
       "_id": "...",
-      "name": "Telur Ayam Isi 10",
+      "name": "Telur Ayam Negeri",
       "unitType": "kg",
       "price": 30000,
       ...
@@ -179,7 +179,7 @@ Returns all products including their `unitType` field.
     "items": [
       {
         "productId": "6750a1b2c3d4e5f6g7h8i9j0",
-        "name": "Telur Ayam Isi 10",
+        "name": "Telur Ayam Negeri",
         "price": 30000,
         "unitType": "kg",
         "weight": 2.5,
@@ -243,7 +243,7 @@ Returns all products including their `unitType` field.
     "items": [
       {
         "productId": "TELUR_ID",
-        "name": "Telur Ayam Isi 10",
+        "name": "Telur Ayam Negeri",
         "price": 30000,
         "unitType": "kg",
         "weight": 1.5,
@@ -287,7 +287,7 @@ Returns all products including their `unitType` field.
 **Response (400)**:
 ```json
 {
-  "error": "Item Telur Ayam Isi 10 requires weight >= 0.1 kg"
+  "error": "Item Telur Ayam Negeri requires weight >= 0.1 kg"
 }
 ```
 
@@ -311,7 +311,7 @@ Returns all products including their `unitType` field.
 **Response (400)**:
 ```json
 {
-  "error": "Item Telur Ayam Isi 10 requires weight >= 0.1 kg"
+  "error": "Item Telur Ayam Negeri requires weight >= 0.1 kg"
 }
 ```
 
@@ -359,7 +359,7 @@ Returns all products including their `unitType` field.
 **Response (400)**:
 ```json
 {
-  "error": "Insufficient stock for product Telur Ayam Isi 10. Available: 100"
+  "error": "Insufficient stock for product Telur Ayam Negeri. Available: 100"
 }
 ```
 
