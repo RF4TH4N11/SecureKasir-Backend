@@ -39,6 +39,12 @@ const productSchema = new mongoose.Schema(
       unique: true,
       sparse: true,
     },
+    unitType: {
+      type: String,
+      enum: ["unit", "kg"],
+      default: "unit",
+      required: [true, "Unit type is required"],
+    },
     isActive: {
       type: Boolean,
       default: true,
