@@ -24,18 +24,14 @@ const transactionItemSchema = new mongoose.Schema({
     required: function () {
       return this.unitType === "unit";
     },
-    min: function () {
-      return this.unitType === "unit" ? 1 : 0;
-    },
+    min: [0, "Quantity cannot be negative"],
   },
   weight: {
     type: Number,
     required: function () {
       return this.unitType === "kg";
     },
-    min: function () {
-      return this.unitType === "kg" ? 0.1 : 0;
-    },
+    min: [0.1, "Weight must be at least 0.1 kg"],
   },
   subtotal: {
     type: Number,
