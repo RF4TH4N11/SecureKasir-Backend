@@ -43,6 +43,11 @@ const productSchema = new mongoose.Schema(
       type: Boolean,
       default: true,
     },
+    unitType: {
+      type: String,
+      enum: ["unit", "kg"],
+      default: "unit",
+    },
   },
   {
     timestamps: true,

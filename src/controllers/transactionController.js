@@ -156,13 +156,7 @@ export const createTransaction = async (req, res, next) => {
     // Validate items
     const processedItems = [];
     for (const item of items) {
-      if (!item.productId || !item.quantity || item.quantity < 1) {
-        return res.status(400).json({
-          error: "Each item must have productId and quantity >= 1",
-        });
-      }
-
-      // Check product exists and has enough stock
+      // Check product exists
       const product = await Product.findById(item.productId);
       if (!product) {
         return res.status(404).json({
@@ -170,24 +164,56 @@ export const createTransaction = async (req, res, next) => {
         });
       }
 
-      if (product.stock < item.quantity) {
-        return res.status(400).json({
-          error: `Insufficient stock for product ${product.name}. Available: ${product.stock}`,
-        });
+      const itemUnitType = item.unitType || product.unitType || "unit";
+
+      // Validate based on unitType
+      if (itemUnitType === "kg") {
+        if (!item.weight || item.weight <= 0) {
+          return res.status(400).json({
+            error: "Each kg-based item must have weight > 0",
+          });
+        }
+      } else {
+        if (!item.quantity || item.quantity < 1) {
+          return res.status(400).json({
+            error: "Each unit-based item must have quantity >= 1",
+          });
+        }
+
+        // Check stock for unit-based products
+        if (product.stock < item.quantity) {
+          return res.status(400).json({
+            error: `Insufficient stock for product ${product.name}. Available: ${product.stock}`,
+          });
+        }
       }
 
+      const pricePerUnit = item.pricePerUnit || item.price || product.price;
+      const subtotal =
+        itemUnitType === "kg"
+          ? pricePerUnit * item.weight
+          : pricePerUnit * item.quantity;
+
       // Add product details
-      processedItems.push({
+      const processedItem = {
         productId: item.productId,
         name: product.name,
         price: item.price || product.price,
-        quantity: item.quantity,
-        subtotal: (item.price || product.price) * item.quantity,
-      });
+        pricePerUnit: pricePerUnit,
+        unitType: itemUnitType,
+        subtotal: subtotal,
+      };
 
-      // Reduce stock
-      product.stock -= item.quantity;
-      await product.save();
+      if (itemUnitType === "kg") {
+        processedItem.weight = item.weight;
+      } else {
+        processedItem.quantity = item.quantity;
+        // Reduce stock for unit-based products
+        product.stock -= item.quantity;
+        await product.save();
+      }
+
+      processedItems.push(processedItem);
     }
 
     // Create transaction
