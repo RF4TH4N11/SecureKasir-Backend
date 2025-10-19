@@ -156,13 +156,7 @@ export const createTransaction = async (req, res, next) => {
     // Validate items
     const processedItems = [];
     for (const item of items) {
-      if (!item.productId || !item.quantity || item.quantity < 1) {
-        return res.status(400).json({
-          error: "Each item must have productId and quantity >= 1",
-        });
-      }
-
-      // Check product exists and has enough stock
+      // Check product exists
       const product = await Product.findById(item.productId);
       if (!product) {
         return res.status(404).json({
@@ -170,23 +164,58 @@ export const createTransaction = async (req, res, next) => {
         });
       }
 
-      if (product.stock < item.quantity) {
+      const unitType = item.unitType || product.unitType || "unit";
+      let quantityToDeduct = 0;
+      let calculatedSubtotal = 0;
+
+      // Validate based on unit type
+      if (unitType === "kg") {
+        // For kg products, validate weight
+        if (!item.weight || item.weight < 0.1) {
+          return res.status(400).json({
+            error: `Item ${product.name} requires weight >= 0.1 kg`,
+          });
+        }
+        quantityToDeduct = item.weight;
+        calculatedSubtotal = (item.price || product.price) * item.weight;
+      } else {
+        // For unit products, validate quantity
+        if (!item.quantity || item.quantity < 1) {
+          return res.status(400).json({
+            error: `Item ${product.name} requires quantity >= 1`,
+          });
+        }
+        quantityToDeduct = item.quantity;
+        calculatedSubtotal = (item.price || product.price) * item.quantity;
+      }
+
+      // Check stock availability
+      if (product.stock < quantityToDeduct) {
         return res.status(400).json({
           error: `Insufficient stock for product ${product.name}. Available: ${product.stock}`,
         });
       }
 
-      // Add product details
-      processedItems.push({
+      // Build processed item
+      const processedItem = {
         productId: item.productId,
         name: product.name,
         price: item.price || product.price,
-        quantity: item.quantity,
-        subtotal: (item.price || product.price) * item.quantity,
-      });
+        unitType: unitType,
+        subtotal: calculatedSubtotal,
+      };
+
+      if (unitType === "kg") {
+        processedItem.weight = item.weight;
+        processedItem.quantity = item.weight; // For backward compatibility
+      } else {
+        processedItem.quantity = item.quantity;
+      }
+
+      processedItems.push(processedItem);
 
       // Reduce stock
-      product.stock -= item.quantity;
+      product.stock -= quantityToDeduct;
       await product.save();
     }
 
@@ -318,7 +347,8 @@ export const deleteTransaction = async (req, res, next) => {
     for (const item of transaction.items) {
       const product = await Product.findById(item.productId);
       if (product) {
-        product.stock += item.quantity;
+        const stockToRestore = item.unitType === "kg" ? (item.weight || item.quantity) : item.quantity;
+        product.stock += stockToRestore;
         await product.save();
       }
     }
