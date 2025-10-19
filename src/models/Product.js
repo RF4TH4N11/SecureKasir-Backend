@@ -28,6 +28,11 @@ const productSchema = new mongoose.Schema(
       type: String,
       required: [true, "Product image URL is required"],
     },
+    unitType: {
+      type: String,
+      enum: ["unit", "kg"],
+      default: "unit",
+    },
     description: {
       type: String,
       trim: true,

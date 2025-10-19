@@ -14,10 +14,24 @@ const transactionItemSchema = new mongoose.Schema({
     type: Number,
     required: true,
   },
+  unitType: {
+    type: String,
+    enum: ["unit", "kg"],
+    default: "unit",
+  },
   quantity: {
     type: Number,
-    required: true,
-    min: 1,
+    required: function () {
+      return this.unitType === "unit";
+    },
+    min: [0, "Quantity cannot be negative"],
+  },
+  weight: {
+    type: Number,
+    required: function () {
+      return this.unitType === "kg";
+    },
+    min: [0.1, "Weight must be at least 0.1 kg"],
   },
   subtotal: {
     type: Number,
