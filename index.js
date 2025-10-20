@@ -2,6 +2,7 @@ import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 import { connectDB } from "./src/config/db.js";
+import authRoutes from "./src/routes/auth.js";
 import productRoutes from "./src/routes/products.js";
 import transactionRoutes from "./src/routes/transactions.js";
 import { errorHandler } from "./src/middleware/errorHandler.js";
@@ -19,6 +20,7 @@ app.use(express.urlencoded({ extended: true }));
 connectDB();
 
 // Routes
+app.use("/api/auth", authRoutes);
 app.use("/api/products", productRoutes);
 app.use("/api/transactions", transactionRoutes);
 
